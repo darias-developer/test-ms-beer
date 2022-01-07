@@ -67,13 +67,13 @@ func BeerFindByIdService(id int) (model.BeerModel, error) {
 }
 
 /* BeerFindAllService obtiene todas las cervezas registradas */
-func BeerFindAllService() ([]*model.BeerModel, error) {
+func BeerFindAllService() ([]model.BeerModel, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
 	defer cancel()
 
-	var results []*model.BeerModel
+	var results []model.BeerModel
 
 	conn, err := config.ConectDB()
 
