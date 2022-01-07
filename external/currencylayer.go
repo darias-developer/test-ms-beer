@@ -14,7 +14,17 @@ func Live(currency string) (data.LiveResponse, error) {
 
 	var liveResponse data.LiveResponse
 
-	url := "http://api.currencylayer.com/live?access_key=" + os.Getenv("ACCESS_KEY") + "&currencies=" + currency + "&source=USD"
+	accessKey := os.Getenv("ACCESS_KEY")
+
+	if accessKey == "" {
+		return liveResponse, errors.New("el ACCESS_KEY es requerido")
+	}
+
+	if currency == "" {
+		return liveResponse, errors.New("el currency es requerido")
+	}
+
+	url := "http://api.currencylayer.com/live?access_key=" + accessKey + "&currencies=" + currency + "&source=USD"
 
 	response, err := http.Get(url)
 
@@ -45,7 +55,13 @@ func List() (data.ListResponse, error) {
 
 	var listResponse data.ListResponse
 
-	url := "http://api.currencylayer.com/list?access_key=" + os.Getenv("ACCESS_KEY")
+	accessKey := os.Getenv("ACCESS_KEY")
+
+	if accessKey == "" {
+		return listResponse, errors.New("el ACCESS_KEY es requerido")
+	}
+
+	url := "http://api.currencylayer.com/list?access_key=" + accessKey
 
 	response, err := http.Get(url)
 
