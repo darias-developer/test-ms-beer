@@ -10,8 +10,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type BeerAddType func(beerModel model.BeerModel) (string, error)
+type BeerFindByIdType func(id int) (model.BeerModel, error)
+type BeerFindAllType func() ([]model.BeerModel, error)
+
 /* BeerAddService crea usuario en la db */
-func BeerAddService(beerModel model.BeerModel) (string, error) {
+func BeerAdd(beerModel model.BeerModel) (string, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
@@ -38,7 +42,7 @@ func BeerAddService(beerModel model.BeerModel) (string, error) {
 }
 
 /* BeerFindByIdService busca una cerveza en la db por medio del id */
-func BeerFindByIdService(id int) (model.BeerModel, error) {
+func BeerFindById(id int) (model.BeerModel, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
@@ -67,7 +71,7 @@ func BeerFindByIdService(id int) (model.BeerModel, error) {
 }
 
 /* BeerFindAllService obtiene todas las cervezas registradas */
-func BeerFindAllService() ([]model.BeerModel, error) {
+func BeerFindAll() ([]model.BeerModel, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 

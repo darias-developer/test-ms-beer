@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "5e362e4a-010e-41dd-bf94-cc8b2117d91f",
+		"name": "api.currencylayer.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "live",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://api.currencylayer.com/live?access_key=e59979e596dc86b3aaea9f1727e41416&currencies=EUR,USD,CLP&source=USD",
+					"protocol": "http",
+					"host": [
+						"api",
+						"currencylayer",
+						"com"
+					],
+					"path": [
+						"live"
+					],
+					"query": [
+						{
+							"key": "access_key",
+							"value": "e59979e596dc86b3aaea9f1727e41416"
+						},
+						{
+							"key": "currencies",
+							"value": "EUR,USD,CLP"
+						},
+						{
+							"key": "source",
+							"value": "USD"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://api.currencylayer.com/list?access_key=e59979e596dc86b3aaea9f1727e41416",
+					"protocol": "http",
+					"host": [
+						"api",
+						"currencylayer",
+						"com"
+					],
+					"path": [
+						"list"
+					],
+					"query": [
+						{
+							"key": "access_key",
+							"value": "e59979e596dc86b3aaea9f1727e41416"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "convert",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://api.currencylayer.com/convert?access_key=e59979e596dc86b3aaea9f1727e41416&from=USD&to=EUR&amount=25&format=1",
+					"protocol": "http",
+					"host": [
+						"api",
+						"currencylayer",
+						"com"
+					],
+					"path": [
+						"convert"
+					],
+					"query": [
+						{
+							"key": "access_key",
+							"value": "e59979e596dc86b3aaea9f1727e41416"
+						},
+						{
+							"key": "from",
+							"value": "USD"
+						},
+						{
+							"key": "to",
+							"value": "EUR"
+						},
+						{
+							"key": "amount",
+							"value": "25"
+						},
+						{
+							"key": "format",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

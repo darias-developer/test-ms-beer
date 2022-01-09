@@ -1,13 +1,15 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/darias-developer/test-ms-beer/data"
-	"github.com/darias-developer/test-ms-beer/middleware"
 	"github.com/darias-developer/test-ms-beer/model"
+	"github.com/darias-developer/test-ms-beer/util"
 )
 
 func beerModel() model.BeerModel {
@@ -50,7 +52,7 @@ func muck_findBeerById_error(id int) (model.BeerModel, error) {
 	return beerModel, errors.New("cerveza no encontrada")
 }
 
-func muck_list_success() (data.ListResponse, error) {
+func muck_list_success(get util.TypeGet) (data.ListResponse, error) {
 	var listResponse data.ListResponse
 
 	m := make(map[string]string)
@@ -63,12 +65,28 @@ func muck_list_success() (data.ListResponse, error) {
 	return listResponse, nil
 }
 
-func muck_list_error() (data.ListResponse, error) {
+func mock_list_success(get util.TypeGet) (int, []byte) {
+
+	var listResponse data.ListResponse
+
+	m := make(map[string]string)
+	m["USD"] = "USD"
+	m["EUR"] = "EUR"
+	m["CLP"] = "CLP"
+
+	listResponse.Currencies = m
+	reqBodyBytes := new(bytes.Buffer)
+	json.NewEncoder(reqBodyBytes).Encode(listResponse)
+
+	return 200, reqBodyBytes.Bytes()
+}
+
+func muck_list_error(get util.TypeGet) (data.ListResponse, error) {
 	var listResponse data.ListResponse
 	return listResponse, errors.New("error al llamar servicio list")
 }
 
-func muck_live_success(currencies string) (data.LiveResponse, error) {
+func muck_live_success(currencies string, get util.TypeGet) (data.LiveResponse, error) {
 	var liveResponse data.LiveResponse
 
 	m := make(map[string]float32)
@@ -82,7 +100,7 @@ func muck_live_success(currencies string) (data.LiveResponse, error) {
 	return liveResponse, nil
 }
 
-func muck_live_error(currencies string) (data.LiveResponse, error) {
+func muck_live_error(currencies string, get util.TypeGet) (data.LiveResponse, error) {
 	var liveResponse data.LiveResponse
 	return liveResponse, errors.New("error al llamar servicio live")
 }
@@ -112,7 +130,7 @@ func muck_beerFindById_error(id int) (model.BeerModel, error) {
 
 func TestBeerAdd(t *testing.T) {
 
-	middleware.LoggerInit()
+	util.LoggerInit()
 
 	t.Run("test BeerAdd valida el parametro id", func(t *testing.T) {
 
@@ -308,7 +326,7 @@ func TestBeerAdd(t *testing.T) {
 
 func TestBeerFindAll(t *testing.T) {
 
-	middleware.LoggerInit()
+	util.LoggerInit()
 
 	t.Run("test BeerFindAll success without data", func(t *testing.T) {
 
@@ -337,7 +355,7 @@ func TestBeerFindAll(t *testing.T) {
 
 func TestBeerFindById(t *testing.T) {
 
-	middleware.LoggerInit()
+	util.LoggerInit()
 
 	t.Run("test BeerFindById parametro id no valido", func(t *testing.T) {
 
@@ -366,7 +384,7 @@ func TestBeerFindById(t *testing.T) {
 
 func TestBeerBoxPriceById(t *testing.T) {
 
-	middleware.LoggerInit()
+	util.LoggerInit()
 
 	t.Run("test BeerBoxPriceById parametro id no valido", func(t *testing.T) {
 
@@ -437,6 +455,22 @@ func TestBeerBoxPriceById(t *testing.T) {
 
 		status, desc, _ := BeerBoxPriceById(
 			muck_beerFindById_success, muck_list_success, muck_live_success, data, 1)
+
+		t.Log(status)
+		t.Log(desc)
+
+		if status != http.StatusOK {
+			t.Errorf("Expected: %v, got: %v", http.StatusOK, status)
+		}
+	})
+
+	t.Run("test BeerBoxPriceById curreny por defecto", func(t *testing.T) {
+
+		data := boxpriceRequestData()
+		data.Currency = "EUR"
+
+		status, desc, _ := BeerBoxPriceById(
+			muck_beerFindById_success, muck_list_success, muck_live_success, data, 0)
 
 		t.Log(status)
 		t.Log(desc)

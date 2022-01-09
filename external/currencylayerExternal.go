@@ -3,14 +3,17 @@ package external
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/darias-developer/test-ms-beer/data"
+	u "github.com/darias-developer/test-ms-beer/util"
 )
 
-func Live(currency string) (data.LiveResponse, error) {
+type ListType func(utilGet u.TypeGet) (data.ListResponse, error)
+type LiveType func(currency string, utilGet u.TypeGet) (data.LiveResponse, error)
+
+func Live(currency string, get u.TypeGet) (data.LiveResponse, error) {
 
 	var liveResponse data.LiveResponse
 
@@ -26,19 +29,13 @@ func Live(currency string) (data.LiveResponse, error) {
 
 	url := "http://api.currencylayer.com/live?access_key=" + accessKey + "&currencies=" + currency + "&source=USD"
 
-	response, err := http.Get(url)
+	status, response := get(url)
 
-	if err != nil {
-		return liveResponse, err
+	if status != http.StatusOK {
+		return liveResponse, errors.New(u.ApiCurrencylayerError)
 	}
 
-	responseData, err := ioutil.ReadAll(response.Body)
-
-	if err != nil {
-		return liveResponse, err
-	}
-
-	err = json.Unmarshal(responseData, &liveResponse)
+	err := json.Unmarshal(response, &liveResponse)
 
 	if err != nil {
 		return liveResponse, err
@@ -51,7 +48,7 @@ func Live(currency string) (data.LiveResponse, error) {
 	return liveResponse, nil
 }
 
-func List() (data.ListResponse, error) {
+func List(get u.TypeGet) (data.ListResponse, error) {
 
 	var listResponse data.ListResponse
 
@@ -63,19 +60,13 @@ func List() (data.ListResponse, error) {
 
 	url := "http://api.currencylayer.com/list?access_key=" + accessKey
 
-	response, err := http.Get(url)
+	status, response := get(url)
 
-	if err != nil {
-		return listResponse, err
+	if status != http.StatusOK {
+		return listResponse, errors.New(u.ApiCurrencylayerError)
 	}
 
-	responseData, err := ioutil.ReadAll(response.Body)
-
-	if err != nil {
-		return listResponse, err
-	}
-
-	err = json.Unmarshal(responseData, &listResponse)
+	err := json.Unmarshal(response, &listResponse)
 
 	if err != nil {
 		return listResponse, err

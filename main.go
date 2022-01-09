@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/darias-developer/test-ms-beer/handler"
-	"github.com/darias-developer/test-ms-beer/middleware"
+	"github.com/darias-developer/test-ms-beer/util"
 )
 
 func main() {
@@ -19,9 +19,9 @@ func main() {
 	}
 
 	//inicializa la configuracion de los logs
-	middleware.LoggerInit()
+	util.LoggerInit()
 
-	middleware.LogInfo.Println("init main")
+	util.LogInfo.Println("init main")
 
 	//carga las rutas
 	handler.RouterManager()
