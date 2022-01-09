@@ -119,8 +119,6 @@ func BeerBoxPriceById(
 
 	u.LogInfo.Printf("model currency: %s, quantity: %f:", beer.Currency, beer.Price)
 
-	var liveResponse d.LiveResponse
-
 	//valido que el currency sea correcto
 	listResponse, err := list(u.Get)
 
@@ -133,6 +131,8 @@ func BeerBoxPriceById(
 		u.LogError.Printf("la moneda ingresada no es valida")
 		return http.StatusNotFound, u.BadRequestDesc, 0
 	}
+
+	var liveResponse d.LiveResponse
 
 	// en caso de que la la moneda no sea USD se pasa a USD
 	if beer.Currency != "USD" {
