@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 
 	"github.com/darias-developer/test-ms-beer/config"
 	"github.com/darias-developer/test-ms-beer/handler"
@@ -24,10 +25,20 @@ func main() {
 
 	util.LogInfo.Println("init main")
 
-	//carga las rutas
-	handler.RouterManager()
-
 	//verifica conexion a la db
 	util.LogInfo.Println("init CheckConnection")
 	config.CheckConnection()
+
+	c := cron.New()
+
+	c.AddFunc("@every 60m", func() {
+		util.LogInfo.Println("reconect CheckConnection")
+		config.CheckConnection()
+	})
+
+	c.Start()
+	//time.Sleep(time.Second * 5)
+
+	//carga las rutas
+	handler.RouterManager()
 }
