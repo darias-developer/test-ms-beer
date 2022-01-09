@@ -21,7 +21,7 @@ func BeerAdd(beerModel model.BeerModel) (string, error) {
 
 	defer cancel()
 
-	conn, err := config.ConectDB()
+	conn, err := config.ConnectDB()
 
 	if err != nil {
 		return "", err
@@ -50,7 +50,7 @@ func BeerFindById(id int) (model.BeerModel, error) {
 
 	var beerModel model.BeerModel
 
-	conn, err := config.ConectDB()
+	conn, err := config.ConnectDB()
 
 	if err != nil {
 		return beerModel, err
@@ -79,7 +79,7 @@ func BeerFindAll() ([]model.BeerModel, error) {
 
 	var results []model.BeerModel
 
-	conn, err := config.ConectDB()
+	conn, err := config.ConnectDB()
 
 	if err != nil {
 		return results, err

@@ -9,8 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-/* ConectDB() es la funcion que realiza la conexion  al db */
-func ConectDB() (*mongo.Client, error) {
+type ConnectDBType func() (*mongo.Client, error)
+
+/* ConnectDB es la funcion que realiza la conexion  al db */
+func ConnectDB() (*mongo.Client, error) {
 
 	var clientOptions = options.Client().ApplyURI(os.Getenv("DB_SOURCE"))
 
@@ -20,25 +22,29 @@ func ConectDB() (*mongo.Client, error) {
 		return client, errors.New("ERROR_CONN: " + err.Error())
 	}
 
-	err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		return client, errors.New("ERROR_PING: " + err.Error())
-	}
-
 	return client, nil
 }
 
-/* CheckConnection() es la funcion que realiza un ping a la db */
-func CheckConnection() error {
+func PingDB(client mongo.Client) error {
 
-	conn, err := ConectDB()
+	err := client.Ping(context.TODO(), nil)
 
 	if err != nil {
 		return err
 	}
 
-	err = conn.Ping(context.TODO(), nil)
+	return nil
+}
+
+func CheckConnection() error {
+
+	client, err := ConnectDB()
+
+	if err != nil {
+		return err
+	}
+
+	err = PingDB(*client)
 
 	if err != nil {
 		return err

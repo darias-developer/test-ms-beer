@@ -5,6 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"github.com/darias-developer/test-ms-beer/config"
 	"github.com/darias-developer/test-ms-beer/handler"
 	"github.com/darias-developer/test-ms-beer/util"
 )
@@ -25,4 +26,8 @@ func main() {
 
 	//carga las rutas
 	handler.RouterManager()
+
+	//verifica conexion a la db
+	util.LogInfo.Println("init CheckConnection")
+	config.CheckConnection()
 }
