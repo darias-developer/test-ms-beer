@@ -27,7 +27,7 @@ func main() {
 	//verifica conexion a la db
 	util.LogInfo.Println("init CheckConnection")
 
-	err = config.CheckConn(config.ConnectDB)
+	err = config.CheckConn(config.ConnectDB, util.MakePing)
 
 	if err != nil {
 		util.LogError.Printf(err.Error())

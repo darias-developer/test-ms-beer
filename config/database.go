@@ -2,9 +2,9 @@ package config
 
 import (
 	"context"
-	"errors"
 	"os"
 
+	"github.com/darias-developer/test-ms-beer/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,7 +18,7 @@ func ConnectDB() (*mongo.Client, error) {
 }
 
 /* CheckConnection es la funcion que realiza un check a la db */
-func CheckConn(typeConnectDB TypeConnectDB) error {
+func CheckConn(typeConnectDB TypeConnectDB, typeMakePing util.TypeMakePing) error {
 
 	client, err := typeConnectDB()
 
@@ -26,11 +26,7 @@ func CheckConn(typeConnectDB TypeConnectDB) error {
 		return err
 	}
 
-	if client == nil {
-		return errors.New("cliente no valido")
-	}
-
-	err = client.Ping(context.TODO(), nil)
+	err = typeMakePing(client)
 
 	if err != nil {
 		return err

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	m "github.com/darias-developer/test-ms-beer/middleware"
 	r "github.com/darias-developer/test-ms-beer/router"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -16,14 +17,9 @@ func RouterManager() {
 	newRouter := mux.NewRouter()
 
 	newRouter.HandleFunc("/beers", r.BeerFindAll).Methods("GET")
-	newRouter.HandleFunc("/beers", r.BeerAdd).Methods("POST")
-	newRouter.HandleFunc("/beers/{id}", r.BeerFindById).Methods("GET")
-	newRouter.HandleFunc("/beers/{id}/boxprice", r.BeerBoxPriceById).Methods("GET")
-
-	// newRouter.HandleFunc("/beers", m.CheckDB(r.BeerFindAll)).Methods("GET")
-	// newRouter.HandleFunc("/beers", m.CheckDB(r.BeerAdd)).Methods("POST")
-	// newRouter.HandleFunc("/beers/{id}", m.CheckDB(r.BeerFindById)).Methods("GET")
-	// newRouter.HandleFunc("/beers/{id}/boxprice", m.CheckDB(r.BeerBoxPriceById)).Methods("GET")
+	newRouter.HandleFunc("/beers", m.ValidateBeerAdd(r.BeerAdd)).Methods("POST")
+	newRouter.HandleFunc("/beers/{id}", m.ValidateBeerFindById(r.BeerFindById)).Methods("GET")
+	newRouter.HandleFunc("/beers/{id}/boxprice", m.ValidateBeerBoxPriceById(r.BeerBoxPriceById)).Methods("GET")
 
 	PORT := os.Getenv("PORT")
 

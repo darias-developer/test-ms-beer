@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/darias-developer/test-ms-beer/config"
 	d "github.com/darias-developer/test-ms-beer/data"
 	e "github.com/darias-developer/test-ms-beer/external"
 	m "github.com/darias-developer/test-ms-beer/model"
@@ -13,43 +14,14 @@ import (
 
 func BeerAdd(add s.BeerAddType, findBy s.BeerFindByIdType, list e.ListType, beer m.BeerModel) (int, string) {
 
-	if beer.Id == 0 {
-		u.LogError.Printf("el campo id es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
-
-	_, err := findBy(beer.Id)
+	//valido que el id ingresado no exista en la db
+	_, err := findBy(beer.Id, config.ConnectDB, u.FindOneBeer)
 
 	if err == nil {
 		return http.StatusConflict, u.BeerNotFound
 	}
 
 	u.LogInfo.Println("Id no registrado. Se procede a registrar la cerveza")
-
-	if len(beer.Name) == 0 {
-		u.LogError.Printf("el campo name es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
-
-	if len(beer.Brewery) == 0 {
-		u.LogError.Printf("el campo brewery es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
-
-	if len(beer.Country) == 0 {
-		u.LogError.Printf("el campo country es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
-
-	if beer.Price == 0 {
-		u.LogError.Printf("el campo price es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
-
-	if len(beer.Currency) == 0 {
-		u.LogError.Printf("el campo currency es requerido")
-		return http.StatusBadRequest, u.BadRequestDesc
-	}
 
 	//valido que el currency sea correcto
 	listResponse, err := list(u.Get)
@@ -63,7 +35,7 @@ func BeerAdd(add s.BeerAddType, findBy s.BeerFindByIdType, list e.ListType, beer
 		return http.StatusBadRequest, u.BadRequestDesc
 	}
 
-	oid, err := add(beer)
+	oid, err := add(beer, config.ConnectDB, u.InsertOneBeer)
 
 	if err != nil {
 		u.LogError.Println(err)
@@ -75,9 +47,9 @@ func BeerAdd(add s.BeerAddType, findBy s.BeerFindByIdType, list e.ListType, beer
 	return http.StatusOK, u.BeerCreated
 }
 
-func BeerFindAll(findAll s.BeerFindAllType) (int, string, []m.BeerModel) {
+func BeerFindAll(beerFindAll s.BeerFindAllType) (int, string, []m.BeerModel) {
 
-	arr, err := findAll()
+	arr, err := beerFindAll(config.ConnectDB, u.FindAllBeer)
 
 	if err != nil {
 		u.LogError.Println(err.Error())
@@ -90,7 +62,7 @@ func BeerFindAll(findAll s.BeerFindAllType) (int, string, []m.BeerModel) {
 
 func BeerFindById(findBy s.BeerFindByIdType, id int) (int, string, m.BeerModel) {
 
-	beerModel, err := findBy(id)
+	beerModel, err := findBy(id, config.ConnectDB, u.FindOneBeer)
 
 	if err != nil {
 		return http.StatusNotFound, u.BeerNotFound, beerModel
@@ -109,7 +81,7 @@ func BeerBoxPriceById(
 		boxpriceReq.Quantity = 6
 	}
 
-	beer, err := findBy(id)
+	beer, err := findBy(id, config.ConnectDB, u.FindOneBeer)
 
 	if err != nil {
 		return http.StatusNotFound, u.BeerNotFound, 0

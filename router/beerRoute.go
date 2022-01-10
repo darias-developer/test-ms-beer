@@ -19,17 +19,11 @@ func BeerAdd(rw http.ResponseWriter, r *http.Request) {
 
 	u.LogInfo.Println("init BeerAdd")
 
-	var status int = http.StatusBadRequest
-	var desc string = "Request invalida"
-
+	//transforma el json a un objecto
 	var beerModel m.BeerModel
-	err := json.NewDecoder(r.Body).Decode(&beerModel)
+	json.NewDecoder(r.Body).Decode(&beerModel)
 
-	if err != nil {
-		u.LogError.Printf("existe un error en la data enviada: %s", err.Error())
-	} else {
-		status, desc = c.BeerAdd(s.BeerAdd, s.BeerFindById, e.List, beerModel)
-	}
+	status, desc := c.BeerAdd(s.BeerAdd, s.BeerFindById, e.List, beerModel)
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Header().Set("description", desc)
@@ -61,22 +55,10 @@ func BeerFindById(rw http.ResponseWriter, r *http.Request) {
 
 	u.LogInfo.Println("init BeerFindById")
 
-	var status int = http.StatusBadRequest
-	var desc string = "Request invalida"
-	var beerModel m.BeerModel
+	//obtierne el parametro id desde la url
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
-	params := mux.Vars(r)
-	u.LogInfo.Println("id: " + params["id"])
-
-	id, err := strconv.Atoi(params["id"])
-
-	if err != nil {
-		u.LogError.Println(err.Error())
-		desc = "El Id de la cerveza no es valido"
-		status = http.StatusNotFound
-	} else {
-		status, desc, beerModel = c.BeerFindById(s.BeerFindById, id)
-	}
+	status, desc, beerModel := c.BeerFindById(s.BeerFindById, id)
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Header().Set("description", desc)
@@ -94,32 +76,14 @@ func BeerBoxPriceById(rw http.ResponseWriter, r *http.Request) {
 
 	u.LogInfo.Println("init BeerBoxPriceById")
 
-	var status int
-	var desc string
-	var boxPrice float32
+	//transforma el json a un objecto
+	var boxpriceRequest d.BoxpriceRequest
+	json.NewDecoder(r.Body).Decode(&boxpriceRequest)
 
-	params := mux.Vars(r)
+	//obtierne el parametro id desde la url
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
-	u.LogInfo.Println("id: " + params["id"])
-
-	id, err := strconv.Atoi(params["id"])
-
-	if err != nil {
-		u.LogError.Println(err.Error())
-		desc = "El Id de la cerveza no es valido"
-		status = http.StatusNotFound
-	} else {
-		var boxpriceRequest d.BoxpriceRequest
-		err := json.NewDecoder(r.Body).Decode(&boxpriceRequest)
-
-		if err != nil {
-			u.LogError.Printf("existe un error en la data enviada: %s", err.Error())
-			status = http.StatusBadRequest
-			desc = "Request invalida"
-		} else {
-			status, desc, boxPrice = c.BeerBoxPriceById(s.BeerFindById, e.List, e.Live, boxpriceRequest, id)
-		}
-	}
+	status, desc, boxPrice := c.BeerBoxPriceById(s.BeerFindById, e.List, e.Live, boxpriceRequest, id)
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Header().Set("description", desc)

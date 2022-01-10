@@ -17,6 +17,14 @@ func mock_connectDB_error() (*mongo.Client, error) {
 	return nil, errors.New("error connectDB")
 }
 
+func mock_makePing_success(client *mongo.Client) error {
+	return nil
+}
+
+func mock_makePing_error(client *mongo.Client) error {
+	return errors.New("error pingDB")
+}
+
 func TestConectDB(t *testing.T) {
 
 	t.Run("test ConectDB valida la conexion a la db", func(t *testing.T) {
@@ -29,23 +37,32 @@ func TestConectDB(t *testing.T) {
 	})
 }
 
-func TestCheckConnection(t *testing.T) {
+func TestCheckConn(t *testing.T) {
 
-	t.Run("test CheckConnection: conn error", func(t *testing.T) {
+	t.Run("test CheckConn: conn error, ping error", func(t *testing.T) {
 
-		err := CheckConn(mock_connectDB_error)
+		err := CheckConn(mock_connectDB_error, mock_makePing_error)
 
 		if !strings.Contains(err.Error(), "error connectDB") {
 			t.Errorf("Expected: %v, got: %v", "the Command operation...", err.Error())
 		}
 	})
 
-	t.Run("test CheckConnection: cliente no valido", func(t *testing.T) {
+	t.Run("test CheckConn: conn success, ping error", func(t *testing.T) {
 
-		err := CheckConn(mock_connectDB_success)
+		err := CheckConn(mock_connectDB_success, mock_makePing_error)
 
-		if !strings.Contains(err.Error(), "cliente no valido") {
-			t.Errorf("Expected: %v, got: %v", "cliente no valido", err.Error())
+		if !strings.Contains(err.Error(), "error pingDB") {
+			t.Errorf("Expected: %v, got: %v", "error pingDB", err.Error())
+		}
+	})
+
+	t.Run("test CheckConn: conn success, ping success", func(t *testing.T) {
+
+		err := CheckConn(mock_connectDB_success, mock_makePing_success)
+
+		if err != nil {
+			t.Errorf("Expected: %v, got: %v", nil, err)
 		}
 	})
 }

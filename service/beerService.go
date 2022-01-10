@@ -6,72 +6,64 @@ import (
 
 	"github.com/darias-developer/test-ms-beer/config"
 	"github.com/darias-developer/test-ms-beer/model"
+	"github.com/darias-developer/test-ms-beer/util"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type BeerAddType func(beerModel model.BeerModel) (string, error)
-type BeerFindByIdType func(id int) (model.BeerModel, error)
-type BeerFindAllType func() ([]model.BeerModel, error)
+type BeerAddType func(beerModel model.BeerModel, typeConnectDB config.TypeConnectDB, insertOneBeer util.InsertOneBeerType) (string, error)
+type BeerFindByIdType func(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error)
+type BeerFindAllType func(typeConnectDB config.TypeConnectDB, findAllBeerType util.FindAllBeerType) ([]model.BeerModel, error)
 
-/* BeerAddService crea usuario en la db */
-func BeerAdd(beerModel model.BeerModel) (string, error) {
+/* BeerAdd crea una cerveza en la db */
+func BeerAdd(beerModel model.BeerModel, typeConnectDB config.TypeConnectDB, insertOneBeer util.InsertOneBeerType) (string, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
 	defer cancel()
 
-	conn, err := config.ConnectDB()
+	conn, err := typeConnectDB()
 
 	if err != nil {
 		return "", err
 	}
 
-	db := conn.Database("beer-test")
-	collection := db.Collection("beer")
-
-	result, err := collection.InsertOne(ctx, beerModel)
+	oid, err := insertOneBeer(conn, ctx, beerModel)
 
 	if err != nil {
 		return "", err
 	}
 
-	oid, _ := result.InsertedID.(primitive.ObjectID)
-
-	return oid.String(), nil
+	return oid, nil
 }
 
-/* BeerFindByIdService busca una cerveza en la db por medio del id */
-func BeerFindById(id int) (model.BeerModel, error) {
+/* BeerFindById busca una cerveza en la db por medio del id */
+func BeerFindById(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
 	defer cancel()
 
-	var beerModel model.BeerModel
+	var beer model.BeerModel
 
-	conn, err := config.ConnectDB()
+	conn, err := typeConnectDB()
 
 	if err != nil {
-		return beerModel, err
+		return beer, err
 	}
-
-	db := conn.Database("beer-test")
-	collection := db.Collection("beer")
 
 	condition := bson.M{"id": id}
 
-	err = collection.FindOne(ctx, condition).Decode(&beerModel)
+	beer, err = findOneBeerType(conn, ctx, condition)
 
 	if err != nil {
-		return beerModel, err
+		return beer, err
 	}
 
-	return beerModel, nil
+	return beer, nil
 }
 
-/* BeerFindAllService obtiene todas las cervezas registradas */
-func BeerFindAll() ([]model.BeerModel, error) {
+/* BeerFindAll obtiene todas las cervezas registradas */
+func BeerFindAll(typeConnectDB config.TypeConnectDB, findAllBeerType util.FindAllBeerType) ([]model.BeerModel, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 
@@ -79,34 +71,19 @@ func BeerFindAll() ([]model.BeerModel, error) {
 
 	var results []model.BeerModel
 
-	conn, err := config.ConnectDB()
+	conn, err := typeConnectDB()
 
 	if err != nil {
 		return results, err
 	}
 
-	db := conn.Database("beer-test")
-	collection := db.Collection("beer")
+	condition := bson.M{}
 
-	cur, err := collection.Find(ctx, bson.M{})
-
-	if err != nil {
-		return results, err
-	}
-
-	err = cur.All(ctx, &results)
+	results, err = findAllBeerType(conn, ctx, condition)
 
 	if err != nil {
 		return results, err
 	}
-
-	err = cur.Err()
-
-	if err != nil {
-		return results, err
-	}
-
-	cur.Close(ctx)
 
 	return results, nil
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/darias-developer/test-ms-beer/config"
 	"github.com/darias-developer/test-ms-beer/data"
 	"github.com/darias-developer/test-ms-beer/model"
 	"github.com/darias-developer/test-ms-beer/util"
@@ -45,20 +46,20 @@ func boxpriceRequestData() data.BoxpriceRequest {
 	return boxpriceRequest
 }
 
-func mock_createBeer_success(beerModel model.BeerModel) (string, error) {
+func mock_createBeer_success(beerModel model.BeerModel, typeConnectDB config.TypeConnectDB, insertOneBeer util.InsertOneBeerType) (string, error) {
 	return "11111111", nil
 }
 
-func mock_createBeer_error(beerModel model.BeerModel) (string, error) {
+func mock_createBeer_error(beerModel model.BeerModel, typeConnectDB config.TypeConnectDB, insertOneBeer util.InsertOneBeerType) (string, error) {
 	return "", errors.New("el registro no se ha podido crear")
 }
 
-func muck_findBeerById_success(id int) (model.BeerModel, error) {
+func muck_findBeerById_success(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 	var beerModel model.BeerModel
 	return beerModel, nil
 }
 
-func muck_findBeerById_error(id int) (model.BeerModel, error) {
+func muck_findBeerById_error(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 	var beerModel model.BeerModel
 	return beerModel, errors.New("cerveza no encontrada")
 }
@@ -100,7 +101,7 @@ func muck_live_error(currencies string, get util.TypeGet) (data.LiveResponse, er
 	return liveResponse, errors.New("error al llamar servicio live")
 }
 
-func muck_beerFindAll_success() ([]model.BeerModel, error) {
+func muck_beerFindAll_success(typeConnectDB config.TypeConnectDB, findAllBeerType util.FindAllBeerType) ([]model.BeerModel, error) {
 
 	list := []model.BeerModel{
 		beerModel(),
@@ -108,24 +109,22 @@ func muck_beerFindAll_success() ([]model.BeerModel, error) {
 	return list, nil
 }
 
-func muck_beerFindAll_error() ([]model.BeerModel, error) {
+func muck_beerFindAll_error(typeConnectDB config.TypeConnectDB, findAllBeerType util.FindAllBeerType) ([]model.BeerModel, error) {
 	var list []model.BeerModel
 	return list, errors.New("error_en_db")
 }
 
-func muck_beerFindById_success(id int) (model.BeerModel, error) {
-	//var beerModel model.BeerModel
+func muck_beerFindById_success(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 	beerModel := beerModel()
 	return beerModel, nil
 }
 
-func muck_beerFindById_success_usd(id int) (model.BeerModel, error) {
-	//var beerModel model.BeerModel
+func muck_beerFindById_success_usd(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 	beerModel := beerModelUSD()
 	return beerModel, nil
 }
 
-func muck_beerFindById_error(id int) (model.BeerModel, error) {
+func muck_beerFindById_error(id int, typeConnectDB config.TypeConnectDB, findOneBeerType util.FindOneBeerType) (model.BeerModel, error) {
 	var beerModel model.BeerModel
 	return beerModel, errors.New("error_en_db")
 }
@@ -134,110 +133,110 @@ func TestBeerAdd(t *testing.T) {
 
 	util.LoggerInit()
 
-	t.Run("test BeerAdd valida el parametro id", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro id", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Id = 0
+	// 	beerModel := beerModel()
+	// 	beerModel.Id = 0
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro name", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro name", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Name = ""
+	// 	beerModel := beerModel()
+	// 	beerModel.Name = ""
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro brewery", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro brewery", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Brewery = ""
+	// 	beerModel := beerModel()
+	// 	beerModel.Brewery = ""
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro country", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro country", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Country = ""
+	// 	beerModel := beerModel()
+	// 	beerModel.Country = ""
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro country", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro country", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Country = ""
+	// 	beerModel := beerModel()
+	// 	beerModel.Country = ""
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro price", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro price", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Price = 0
+	// 	beerModel := beerModel()
+	// 	beerModel.Price = 0
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
-	t.Run("test BeerAdd valida el parametro currency", func(t *testing.T) {
+	// t.Run("test BeerAdd valida el parametro currency", func(t *testing.T) {
 
-		beerModel := beerModel()
-		beerModel.Currency = ""
+	// 	beerModel := beerModel()
+	// 	beerModel.Currency = ""
 
-		status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
+	// 	status, desc := BeerAdd(mock_createBeer_success, muck_findBeerById_error, muck_list_success, beerModel)
 
-		t.Log(status)
-		t.Log(desc)
+	// 	t.Log(status)
+	// 	t.Log(desc)
 
-		if status != http.StatusBadRequest {
-			t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
-		}
-	})
+	// 	if status != http.StatusBadRequest {
+	// 		t.Errorf("Expected: %v, got: %v", status, http.StatusBadRequest)
+	// 	}
+	// })
 
 	t.Run("test BeerAdd valida el parametro currency", func(t *testing.T) {
 
