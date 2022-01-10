@@ -1,12 +1,10 @@
-module github.com/darjun/go-daily-lib/cron
+module github.com/darias-developer/test-ms-beer
 
 go 1.17
 
 require (
-	github.com/darias-developer/test-ms-beer v0.0.0-20220109054437-4de8686d15aa
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/cors v1.8.2
 	go.mongodb.org/mongo-driver v1.8.2
 )

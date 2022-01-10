@@ -11,7 +11,7 @@ func CheckDB(next http.HandlerFunc) http.HandlerFunc {
 
 	return func(rw http.ResponseWriter, r *http.Request) {
 
-		err := config.CheckConnection()
+		err := config.CheckConn(config.ConnectDB)
 
 		if err != nil {
 			rw.Header().Set("Content-Type", "application/json")
