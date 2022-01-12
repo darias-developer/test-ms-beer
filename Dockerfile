@@ -4,7 +4,6 @@ FROM golang:latest
 
 WORKDIR /app
 
-COPY .env_docker ./.env
 COPY go.mod ./
 COPY go.sum ./
 COPY main.go ./

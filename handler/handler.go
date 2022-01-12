@@ -7,6 +7,7 @@ import (
 
 	m "github.com/darias-developer/test-ms-beer/middleware"
 	r "github.com/darias-developer/test-ms-beer/router"
+	u "github.com/darias-developer/test-ms-beer/util"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -24,6 +25,7 @@ func RouterManager() {
 	PORT := os.Getenv("PORT")
 
 	if PORT == "" {
+		u.LogWarn.Printf("puerto no encontrado. se utilizara el puerto por defecto")
 		PORT = "8080"
 	}
 

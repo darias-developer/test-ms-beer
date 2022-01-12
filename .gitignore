@@ -1,5 +1,7 @@
-﻿.env
+﻿.env_docker
+.env*
 .\.env
+.\.env_docker
 *.exe
 coverage_out
 *.log

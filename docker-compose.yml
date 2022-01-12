@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  mongodb:
+      container_name: mongodb
+      image: mongo
+      ports:
+        - 27017:27017
+      volumes:
+        - mongo_data:/data/db
+  go-app:
+      container_name: go-app
+      image: test-ms-beer:v1.0
+      build: .
+      depends_on:
+        - mongodb
+      environment:
+        - PORT=8080
+        - DB_SOURCE=mongodb://mongodb:27017
+        - LOG_PATH=/app/logs/test-ms-beer.log
+        - ACCESS_KEY=e59979e596dc86b3aaea9f1727e41416
+      ports:
+        - 8080:8080
+      volumes:
+        - logs:/app/logs
+volumes:
+  logs:
+    external:
+      name: "logs"
+  mongo_data:
+    external:
+      name: "mongo_data"
